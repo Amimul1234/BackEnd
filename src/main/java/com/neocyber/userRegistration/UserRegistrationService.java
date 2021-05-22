@@ -3,6 +3,7 @@ package com.neocyber.userRegistration;
 import com.neocyber.exception.AlreadyExists;
 import com.neocyber.security.NeoCyberUserRepo;
 import com.neocyber.security.entity.NeoCyberUser;
+import com.neocyber.security.entity.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,9 +40,14 @@ public class UserRegistrationService {
 
             neoCyberUser.setEmailId(userRegistration.getEmailId());
             neoCyberUser.setPassword(passwordEncoder.encode(userRegistration.getPassword()));
-            neoCyberUser.addNewRole(ROLE_USER.name());
             neoCyberUser.setFullName(userRegistration.getFullName());
             neoCyberUser.setEnabled(true);
+
+            UserRole userRole = new UserRole();
+            userRole.setRole(ROLE_USER.name());
+            userRole.setNeoCyberUser(neoCyberUser);
+
+            neoCyberUser.addNewRole(userRole);
 
             neoCyberUserRepo.save(neoCyberUser);
         }

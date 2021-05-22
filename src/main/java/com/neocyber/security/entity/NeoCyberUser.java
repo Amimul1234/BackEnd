@@ -26,11 +26,12 @@ public class NeoCyberUser implements UserDetails {
     private boolean enabled;
 
     @OneToMany(mappedBy = "neoCyberUser", orphanRemoval = true,
-            fetch = FetchType.EAGER)
+            fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UserRole> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+
         List<SimpleGrantedAuthority> simpleGrantedAuthorityList = new ArrayList<>();
 
         roles.forEach(userRole -> simpleGrantedAuthorityList.add(
@@ -69,13 +70,8 @@ public class NeoCyberUser implements UserDetails {
         return enabled;
     }
 
-    public void addNewRole(String userRole)
+    public void addNewRole(UserRole userRole)
     {
-        UserRole userRole1 = new UserRole();
-
-        userRole1.setRole(userRole);
-        userRole1.setNeoCyberUser(this);
-
-        roles.add(userRole1);
+        roles.add(userRole);
     }
 }
