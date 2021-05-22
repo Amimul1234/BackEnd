@@ -23,7 +23,7 @@ public class NeoCyberUser implements UserDetails {
     private String password;
     @Column(nullable = false)
     private String fullName;
-    private boolean enabled = true;
+    private boolean enabled;
 
     @OneToMany(mappedBy = "neoCyberUser", orphanRemoval = true,
             fetch = FetchType.EAGER)
@@ -41,42 +41,41 @@ public class NeoCyberUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return emailId;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 
-    public void addNewRole(UserRole userRole)
+    public void addNewRole(String userRole)
     {
-        if(roles.size() == 0 )
-        {
-            roles = new ArrayList<>();
-            roles.add(userRole);
-        }
+        UserRole userRole1 = new UserRole();
 
-        roles.add(userRole);
+        userRole1.setRole(userRole);
+        userRole1.setNeoCyberUser(this);
+
+        roles.add(userRole1);
     }
 }
