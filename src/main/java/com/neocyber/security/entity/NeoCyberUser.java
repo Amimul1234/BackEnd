@@ -24,6 +24,8 @@ public class NeoCyberUser implements UserDetails {
     @Column(nullable = false)
     private String fullName;
     private boolean enabled;
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
 
     @OneToMany(mappedBy = "neoCyberUser", orphanRemoval = true,
             fetch = FetchType.EAGER, cascade = CascadeType.ALL)
