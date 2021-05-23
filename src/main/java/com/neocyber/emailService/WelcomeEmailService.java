@@ -1,52 +1,42 @@
 package com.neocyber.emailService;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.util.Date;
-import java.util.Properties;
 
 @Service
 public class WelcomeEmailService {
 
-    @Value("${mail.userName}")
-    private String userName;
-    @Value("${mail.password}")
-    private String password;
-
     private final MailContentBuilder mailContentBuilder;
+    private final JavaMailSender javaMailSender;
 
-    public WelcomeEmailService( MailContentBuilder mailContentBuilder ) {
+    public WelcomeEmailService( MailContentBuilder mailContentBuilder,
+                                JavaMailSender javaMailSender ) {
         this.mailContentBuilder = mailContentBuilder;
+        this.javaMailSender = javaMailSender;
     }
 
     @Async
     public void sendMail(String emailAddress, String clientName) throws MessagingException
     {
-        Properties properties = new Properties();
+        MimeMessagePreparator messagePreparator = mimeMessage -> {
 
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
 
-        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(userName, password);}
-        });
+            messageHelper.setFrom("neocybermr2021@gmail.com");
+            messageHelper.setTo(emailAddress);
+            messageHelper.setSubject("Welcome to our shop");
+            messageHelper.setSentDate(new Date());
 
+            String content = mailContentBuilder.build(clientName);
+            messageHelper.setText(content, true);
 
-        Message message = new MimeMessage(session);
+        };
 
-        message.setFrom(new InternetAddress(userName));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailAddress));
-        message.setSubject("Welcome to our shop");
-        message.setSentDate(new Date());
-        message.setText(mailContentBuilder.build(clientName));
-
-        Transport.send(message);
+        javaMailSender.send(messagePreparator);
     }
 }

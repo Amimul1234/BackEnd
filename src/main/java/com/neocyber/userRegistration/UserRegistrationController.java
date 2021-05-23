@@ -1,6 +1,7 @@
 package com.neocyber.userRegistration;
 
 import com.neocyber.emailService.WelcomeEmailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.mail.MessagingException;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/user/")
 public class UserRegistrationController {
 
@@ -21,10 +23,18 @@ public class UserRegistrationController {
     }
 
     @PostMapping("/registerNewUser")
-    public void registerNewUser(@RequestBody  UserRegistration userRegistration)
-            throws MessagingException {
+    public void registerNewUser(@RequestBody  UserRegistration userRegistration) {
         userRegistrationService.registerNewUser(userRegistration);
-        welcomeEmailService.sendMail(userRegistration.getEmailId(), userRegistration.getFullName());
+
+        try
+        {
+            welcomeEmailService.sendMail(userRegistration.getEmailId(),
+                    userRegistration.getFullName());
+        }
+        catch (MessagingException messagingException)
+        {
+            log.error("Error sending email: error is " + messagingException);
+        }
     }
 
 }
