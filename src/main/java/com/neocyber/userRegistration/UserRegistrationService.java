@@ -1,10 +1,13 @@
 package com.neocyber.userRegistration;
 
 import com.neocyber.exception.AlreadyExists;
+import com.neocyber.security.AuthenticationResponse;
+import com.neocyber.security.JwtUtils;
 import com.neocyber.security.NeoCyberUserRepo;
 import com.neocyber.security.entity.NeoCyberUser;
 import com.neocyber.security.entity.UserRole;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -16,15 +19,19 @@ public class UserRegistrationService {
 
     private final NeoCyberUserRepo neoCyberUserRepo;
     private final PasswordEncoder passwordEncoder;
+    private final NeoCyberUser neoCyberUser;
+    private final JwtUtils jwtUtils;
 
-    public UserRegistrationService( NeoCyberUserRepo neoCyberUserRepo,
-                                    PasswordEncoder passwordEncoder ) {
+    public UserRegistrationService( NeoCyberUserRepo neoCyberUserRepo, PasswordEncoder passwordEncoder,
+                                    NeoCyberUser neoCyberUser, JwtUtils jwtUtils ) {
         this.neoCyberUserRepo = neoCyberUserRepo;
         this.passwordEncoder = passwordEncoder;
+        this.neoCyberUser = neoCyberUser;
+        this.jwtUtils = jwtUtils;
     }
 
 
-    public void registerNewUser( UserRegistration userRegistration ) {
+    public ResponseEntity<AuthenticationResponse> registerNewUser( UserRegistration userRegistration ) {
 
         Optional<NeoCyberUser> neoCyberUserOptional =
                 neoCyberUserRepo.findById(userRegistration.getEmailId());
@@ -50,6 +57,8 @@ public class UserRegistrationService {
             neoCyberUser.addNewRole(userRole);
 
             neoCyberUserRepo.save(neoCyberUser);
+
+            return ResponseEntity.ok(new AuthenticationResponse(jwtUtils.generateToken(neoCyberUser)));
         }
     }
 }
