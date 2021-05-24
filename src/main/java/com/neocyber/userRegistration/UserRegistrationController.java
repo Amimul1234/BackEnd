@@ -1,6 +1,7 @@
 package com.neocyber.userRegistration;
 
 import com.neocyber.emailService.WelcomeEmailService;
+import com.neocyber.exception.UnAuthorizedException;
 import com.neocyber.security.AuthenticationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -41,16 +42,20 @@ public class UserRegistrationController {
     //Get Jwt Token
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticateUser(
-            @RequestBody UserRegistration userRegistration) throws Exception {
+            @RequestBody UserRegistration userRegistration){
 
-        userRegistrationService.authenticate(userRegistration.getEmailId(), userRegistration.getPassword());
+        try {
+            userRegistrationService.authenticate(userRegistration.getEmailId(), userRegistration.getPassword());
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw new UnAuthorizedException("User not authorized");
+        }
 
         final UserDetails userDetails = userRegistrationService.loadUserByUsername(userRegistration.getEmailId());
         final String token = userRegistrationService.generateToken(userDetails);
 
         return ResponseEntity.ok(new AuthenticationResponse(token));
     }
-
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/hello")

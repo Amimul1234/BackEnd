@@ -16,8 +16,8 @@ public class JwtUtils {
 
     @Value("${neoCyber.jwtSecret}")
     private String SECRET_KEY;
-    @Value("${neoCyber.jwtTimeOut}")
-    private long timeOut;
+    //10 min expiry time
+    private final long timeOut = 10 * 60 * 1000;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
