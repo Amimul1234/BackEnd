@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "mail.userName",
+      "type": "java.lang.String",
+      "description": "Description for mail.userName."
+    },
+    {
+      "name": "mail.password",
+      "type": "java.lang.String",
+      "description": "Description for mail.password."
+    }
+  ] }
