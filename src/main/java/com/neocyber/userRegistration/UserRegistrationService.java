@@ -1,13 +1,16 @@
 package com.neocyber.userRegistration;
 
 import com.neocyber.exception.AlreadyExists;
-import com.neocyber.security.AuthenticationResponse;
 import com.neocyber.security.JwtUtils;
 import com.neocyber.security.NeoCyberUserRepo;
 import com.neocyber.security.entity.NeoCyberUser;
 import com.neocyber.security.entity.UserRole;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -19,19 +22,19 @@ public class UserRegistrationService {
 
     private final NeoCyberUserRepo neoCyberUserRepo;
     private final PasswordEncoder passwordEncoder;
-    private final NeoCyberUser neoCyberUser;
     private final JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
 
     public UserRegistrationService( NeoCyberUserRepo neoCyberUserRepo, PasswordEncoder passwordEncoder,
-                                    NeoCyberUser neoCyberUser, JwtUtils jwtUtils ) {
+                                    JwtUtils jwtUtils, AuthenticationManager authenticationManager ) {
         this.neoCyberUserRepo = neoCyberUserRepo;
         this.passwordEncoder = passwordEncoder;
-        this.neoCyberUser = neoCyberUser;
         this.jwtUtils = jwtUtils;
+        this.authenticationManager = authenticationManager;
     }
 
 
-    public ResponseEntity<AuthenticationResponse> registerNewUser( UserRegistration userRegistration ) {
+    public void registerNewUser( UserRegistration userRegistration ) {
 
         Optional<NeoCyberUser> neoCyberUserOptional =
                 neoCyberUserRepo.findById(userRegistration.getEmailId());
@@ -57,8 +60,26 @@ public class UserRegistrationService {
             neoCyberUser.addNewRole(userRole);
 
             neoCyberUserRepo.save(neoCyberUser);
-
-            return ResponseEntity.ok(new AuthenticationResponse(jwtUtils.generateToken(neoCyberUser)));
         }
     }
+
+    public UserDetails loadUserByUsername( String emailId ) {
+        return neoCyberUserRepo.findByEmailId(emailId);
+    }
+
+    public String generateToken( UserDetails userDetails ) {
+        return jwtUtils.generateToken(userDetails);
+    }
+
+    public void authenticate(String username, String password) throws Exception {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
+    }
+
+
 }

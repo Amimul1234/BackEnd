@@ -5,7 +5,9 @@ import com.neocyber.security.AuthenticationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import javax.mail.MessagingException;
 
 @RestController
 @Slf4j
@@ -21,31 +23,36 @@ public class UserRegistrationController {
         this.welcomeEmailService = welcomeEmailService;
     }
 
-//    @PostMapping("/registerNewUser")
-//    public void registerNewUser(@RequestBody  UserRegistration userRegistration) {
-//        userRegistrationService.registerNewUser(userRegistration);
-//
-//        try
-//        {
-//            welcomeEmailService.sendMail(userRegistration.getEmailId(),
-//                    userRegistration.getFullName());
-//        }
-//        catch (MessagingException messagingException)
-//        {
-//            log.error("Error sending email: error is " + messagingException);
-//        }
-//    }
-
-
-
+    //Register new user
     @PostMapping("/registerNewUser")
-    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
-            @RequestBody UserRegistration userRegistration) {
-        return userRegistrationService.registerNewUser(userRegistration);
+    public void registerNewUser( @RequestBody UserRegistration userRegistration) {
+
+        userRegistrationService.registerNewUser(userRegistration);
+        try
+        {
+            welcomeEmailService.sendMail(userRegistration.getEmailId(), userRegistration.getFullName());
+        }
+        catch (MessagingException messagingException)
+        {
+            log.error("Error sending email: error is " + messagingException);
+        }
+    }
+
+    //Get Jwt Token
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticateUser(
+            @RequestBody UserRegistration userRegistration) throws Exception {
+
+        userRegistrationService.authenticate(userRegistration.getEmailId(), userRegistration.getPassword());
+
+        final UserDetails userDetails = userRegistrationService.loadUserByUsername(userRegistration.getEmailId());
+        final String token = userRegistrationService.generateToken(userDetails);
+
+        return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/hello")
     public String getMsg()
     {

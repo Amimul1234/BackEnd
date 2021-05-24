@@ -1,6 +1,5 @@
 package com.neocyber.security;
 
-import com.neocyber.security.entity.NeoCyberUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,6 +16,8 @@ public class JwtUtils {
 
     @Value("${neoCyber.jwtSecret}")
     private String SECRET_KEY;
+    @Value("${neoCyber.jwtTimeOut}")
+    private long timeOut;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -38,14 +39,14 @@ public class JwtUtils {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken( NeoCyberUser neoCyberUser) {
+    public String generateToken( UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, neoCyberUser.getEmailId());
+        return createToken(claims, userDetails.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + timeOut))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
