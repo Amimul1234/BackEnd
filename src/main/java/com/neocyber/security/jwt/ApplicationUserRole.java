@@ -1,4 +1,4 @@
-package com.neocyber.security;
+package com.neocyber.security.jwt;
 
 public enum ApplicationUserRole {
     ROLE_ADMIN,

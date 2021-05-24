@@ -1,4 +1,4 @@
-package com.neocyber.security;
+package com.neocyber.security.jwt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

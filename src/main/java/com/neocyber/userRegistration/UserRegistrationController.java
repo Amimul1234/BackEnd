@@ -2,7 +2,7 @@ package com.neocyber.userRegistration;
 
 import com.neocyber.emailService.WelcomeEmailService;
 import com.neocyber.exception.UnAuthorizedException;
-import com.neocyber.security.AuthenticationResponse;
+import com.neocyber.security.jwt.AuthenticationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

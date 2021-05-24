@@ -1,4 +1,4 @@
-package com.neocyber.security.entity;
+package com.neocyber.security.jwt.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,10 @@
 package com.neocyber.userRegistration;
 
 import com.neocyber.exception.AlreadyExists;
-import com.neocyber.security.JwtUtils;
-import com.neocyber.security.NeoCyberUserRepo;
-import com.neocyber.security.entity.NeoCyberUser;
-import com.neocyber.security.entity.UserRole;
+import com.neocyber.security.jwt.JwtUtils;
+import com.neocyber.security.jwt.NeoCyberUserRepo;
+import com.neocyber.security.jwt.entity.NeoCyberUser;
+import com.neocyber.security.jwt.entity.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
-import static com.neocyber.security.ApplicationUserRole.ROLE_USER;
+import static com.neocyber.security.jwt.ApplicationUserRole.ROLE_USER;
 
 @Service
 @Slf4j

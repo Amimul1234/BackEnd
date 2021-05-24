@@ -1,5 +1,6 @@
-package com.neocyber.security;
+package com.neocyber.security.jwt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final NeoCyberUserDetailsService userDetailsService;
@@ -26,7 +28,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal( HttpServletRequest request, @NotNull HttpServletResponse response,
-                                     @NotNull FilterChain chain) throws ServletException, IOException {
+                                     @NotNull FilterChain chain){
 
         final String authorizationHeader = request.getHeader("Authorization");
 
@@ -55,6 +57,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        chain.doFilter(request, response);
+        try {
+            chain.doFilter(request, response);
+        } catch (IOException | ServletException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

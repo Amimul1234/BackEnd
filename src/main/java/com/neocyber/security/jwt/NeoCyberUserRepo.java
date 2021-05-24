@@ -1,6 +1,6 @@
-package com.neocyber.security;
+package com.neocyber.security.jwt;
 
-import com.neocyber.security.entity.NeoCyberUser;
+import com.neocyber.security.jwt.entity.NeoCyberUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;

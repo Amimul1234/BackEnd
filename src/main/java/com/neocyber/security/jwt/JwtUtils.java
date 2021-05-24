@@ -1,4 +1,4 @@
-package com.neocyber.security;
+package com.neocyber.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
