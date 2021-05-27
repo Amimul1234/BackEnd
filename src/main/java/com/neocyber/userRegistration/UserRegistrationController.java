@@ -29,6 +29,7 @@ public class UserRegistrationController {
     public void registerNewUser( @RequestBody UserRegistration userRegistration) {
 
         userRegistrationService.registerNewUser(userRegistration);
+
         try
         {
             welcomeEmailService.sendMail(userRegistration.getEmailId(), userRegistration.getFullName());
