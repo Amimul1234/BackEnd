@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<ExceptionResponse> unauthorizedException(UnAuthorizedException ex) {
+
         ExceptionResponse response=new ExceptionResponse();
 
         response.setErrorCode("UNAUTHORIZED");
